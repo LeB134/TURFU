@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard 3D - TURFU</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1E1E2F, #4A00E0);
+      overflow: hidden;
+      color: white;
+    }
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .content {
+      position: absolute;
+      top: 10%;
+      left: 5%;
+      z-index: 2;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .content h1 {
+      font-size: 2.5rem;
+      margin: 0;
+    }
+    .content p {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div class="content">
+    <h1>Dashboard TURFU</h1>
+    <p>Visualisez les échanges de tokens en temps réel.</p>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#canvas') });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Sphere (Globe)
+    const globeGeometry = new THREE.SphereGeometry(1, 32, 32);
+    const globeMaterial = new THREE.MeshStandardMaterial({
+      color: 0x0044ff,
+      emissive: 0x00ffff,
+      emissiveIntensity: 0.3,
+      wireframe: true,
+    });
+    const globe = new THREE.Mesh(globeGeometry, globeMaterial);
+    scene.add(globe);
+
+    // Points of light (Token transactions)
+    const pointsGeometry = new THREE.BufferGeometry();
+    const pointsMaterial = new THREE.PointsMaterial({
+      color: 0xff00ff,
+      size: 0.05,
+    });
+
+    const positions = [];
+    for (let i = 0; i < 100; i++) {
+      positions.push(
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 2,
+        (Math.random() - 0.5) * 2
+      );
+    }
+    pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    const points = new THREE.Points(pointsGeometry, pointsMaterial);
+    scene.add(points);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(5, 5, 5);
+    scene.add(pointLight);
+
+    camera.position.z = 3;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      globe.rotation.y += 0.005;
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
+
